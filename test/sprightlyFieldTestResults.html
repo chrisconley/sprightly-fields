@@ -19,6 +19,7 @@ jQuery(document).ready(function ($) {
 		
 	$('[name=enrollment[SCHOOL_LEVEL]]').sprightlyField(schoolLevelSelectors).change( function () {
 	});
+	$('[name=enrollment[SCHOOL_LEVEL]]')[1].checked = false;
 });
 
 $(document).ready(function(){
@@ -28,12 +29,35 @@ $(document).ready(function(){
     test("should hide the element when hide is called", function(){
         
         console.log($('[name=enrollment[SCHOOL_LEVEL]]').fieldValue()[0]);
-        $('[name=enrollment[SCHOOL_LEVEL]]')[0].checked = true;
+        //$('[name=enrollment[SCHOOL_LEVEL]]')[0].checked = true;
         console.log($('[name=enrollment[SCHOOL_LEVEL]]').fieldValue()[0]);
 
         // actual, expected
-        equals($("#enrollment_gpa2").is(':hidden'), true, "The element should be hidden");
+        ok($("#enrollment_gpa2").is(':hidden'), "The element should be hidden");
         equals($("#enrollment_gpa").is(':visible'), true, "The element should be hidden");
+    });
+    
+    module("module2", {
+      setup: function() {
+        $('[name=enrollment[SCHOOL_LEVEL]]')[0].checked = true;
+        $('[name=enrollment[SCHOOL_LEVEL]]').trigger('change');
+        console.log("in setup");
+      },
+      teardown: function() {
+        $('[name=enrollment[SCHOOL_LEVEL]]')[0].checked = false;
+      }
+    });
+    
+    test("should hide the element when hide is called", function(){
+        
+          //console.log($('[name=enrollment[SCHOOL_LEVEL]]').fieldValue()[0]);
+          console.log("in test");
+
+        // actual, expected
+        ok($("#enrollment_gpa2").is(':hidden'), "The element should be hidden");
+        equals($("#enrollment_gpa2:visible").length, 0, 'bla');
+        equals($("#enrollment_gpa").is(':visible'), true, "The element should be hidden");
+        equals($("#enrollment_gpa:visible").length, 1, 'bla');
     });
 });
 
