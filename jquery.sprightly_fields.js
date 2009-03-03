@@ -1,10 +1,10 @@
 (function($) {
-  $.fn.sprightlyField = function(selectors, clearFields) {
+  $.fn.sprightlyFields = function(selectors, clearFields) {
 		// If the jquery object doesn't exist on the current page, then don't do anything
 		if (this.length > 0){
 			/////// Override and extend defaults ///////////////////////////////////
-			//var clearFields = $.extend({}, $.fn.sprightlyField.clearFields, clearFields);
-			selectors = $.extend({}, $.fn.sprightlyField.selectors, selectors);
+			//var clearFields = $.extend({}, $.fn.sprightlyFields.clearFields, clearFields);
+			selectors = $.extend({}, $.fn.sprightlyFields.selectors, selectors);
 	
 			var observer = this;
 			updateFormForValue(observer.fieldValue()[0], selectors);
@@ -62,10 +62,10 @@
 	};
 	
 	//////// Defaults ////////////////////////////////
-  $.fn.sprightlyField.selectors = {
+  $.fn.sprightlyFields.selectors = {
     "blank": '',
    	"default": ''
   };
-	$.fn.sprightlyField.clearFields = false;
+	$.fn.sprightlyFields.clearFields = false;
 	
 })(jQuery);
