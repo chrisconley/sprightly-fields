@@ -1,0 +1,17 @@
+Usage:
+
+jQuery(document).ready(function ($) {
+  $('#field_id').sprightlyFields({
+    "_value1_": '#value1FieldId',
+    "_value2_": '#value2FieldId',
+    "default": '#otherFields'}, {clearFields : true});
+});
+
+In the example below, the element that has id "satFields" will be shown when the field with id "test_score_name" has a value of "SAT". All other fields declared("#actFields" and "#otherFields") will be hidden. If the field value doesn't match "SAT" or "ACT" then the element "#otherFields" will be shown.
+
+jQuery(document).ready(function ($) {
+  $('#test_score_name').sprightlyFields({
+    "SAT": '#satFields',
+    "ACT": '#actFields',
+    "default": '#otherFields'}, {clearFields : true});
+});
