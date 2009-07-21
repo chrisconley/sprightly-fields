@@ -1,30 +1,42 @@
+//separate showing/hiding jquery functions from managing the dynamic fields
+
+var sf = {};
 (function($) {
-  $.fn.sprightlyFields = function(selectors, clearFields) {
-		// If the jquery object doesn't exist on the current page, then don't do anything
-		if (this.length > 0){
-			/////// Override and extend defaults ///////////////////////////////////
-			//var clearFields = $.extend({}, $.fn.sprightlyFields.clearFields, clearFields);
-			selectors = $.extend({}, $.fn.sprightlyFields.selectors, selectors);
-	
-			var observer = this;
-			updateFormForValue(observer.fieldValue()[0], selectors);
-			// Whenever our observer changes, update the form
-			$(observer).change(function () {
-				//TODO: need to add field clearing here if clearFields is set to true
-				if (clearFields == true){}
-				updateFormForValue(observer.fieldValue()[0], selectors);
+  $.fn.sprightlyFields = function(selectors, options) {
+    //return error if jquery.form is not included?
+		if (fieldExists(this)){
+			initialize(this, selectors, options)
+			$(sf.field).change(function () {
+				updateFormForValue(sf.field_value, selectors);
 			});	    
 		}
-		return this;// return jquery object
+		return this;
   };
 
-	function showFieldsFor(identifier, selectors) {
+	function updateFormForValue(value){
+	  if (sf.options.clearFields == true){ 
+	    $(":input", sf.dynamicFields).clearFields();
+	  }
+	  
+		if (sf.selectors[value] != undefined){ 
+		  showFieldsFor(sf.selectors[value]);
+		}
+		else if (value == "" || value == undefined) {
+		  showFieldsFor(sf.selectors["blank"]);
+		}
+		else { showFieldsFor(sf.selectors["default"]); }
+	}
+	
+	
+	function showFieldsFor(identifier) {
 		// do not update the fields if the identifier is "doNothing" such as default : "doNothing"
 		if (identifier == "doNothing"){ return; }
 		
 		// For every dynamicField in the form, check to see our identifier fields include this dynamicField
 		// If so, set the showthis flag to show the fields. If not, hide the fields contained within the identifier.
-		dynamicFields(selectors).each(function(){
+		
+		//change this loop to delete the selector from the selectors array and create a new selector for jquery to use.
+		sf.dynamicFields.each(function(){
 			var showThis = false;
 			for (i=0; i < $(identifier).length; i++) {
 				if ($(this)[0] == $(identifier)[i]) {showThis = true;}
@@ -33,32 +45,34 @@
 			else {$(this).hide();}
 		});
 	}
+
+	//move these dynamic field function to their own class and rename
+	function dynamicFields(){
+		return $(dynamicFieldSelectorArray().join(", "));
+	};
 	
-	function updateFormForValue(value, selectors){
-		// If the selectors object/hash responds to the value passed in,
-		// send the selector defined by selectors[value]
-		if (selectors[value] != undefined){
-			showFieldsFor(selectors[value], selectors);
-		}
-		// If the value is blank, send the selector defined for selectorFor.blank
-		else if (value == "" || value == undefined) {
-			showFieldsFor(selectors["blank"], selectors);
-		}
-		// Else send the selector defined by selectorFor.default
-		else {
-			showFieldsFor(selectors["default"], selectors);
-		}
-	}
-	
-	//joins the selectors object to compile dynamic fields automatically
-	function dynamicFields(selectors){
+	function dynamicFieldSelectorArray(){
 		selectorArray = [];
-		for ( fieldValue in selectors){
-			if(selectors[fieldValue] != "" && selectors[fieldValue] != "doNothing"){
-				selectorArray.push(selectors[fieldValue]);
+		for ( fieldValue in sf.selectors){
+			if(sf.selectors[fieldValue] != "" && sf.selectors[fieldValue] != "doNothing"){
+				selectorArray.push(sf.selectors[fieldValue]);
 			}
 		}
-		return $(selectorArray.join(", "));
+		return selectorArray;
+	};
+	
+	//move to 
+	function fieldExists(field){
+	  if (field.length > 0){return true};
+	};
+	
+	function initialize(field, selectors, options){
+	  sf.options = $.extend({}, $.fn.sprightlyFields.options, options);
+		sf.selectors = $.extend({}, $.fn.sprightlyFields.selectors, selectors);
+		sf.dynamicFields = dynamicFields(selectors);
+		sf.field = field;
+		sf.field_value = field.fieldValue()[0];
+		updateFormForValue(sf.field_value, sf.selectors);
 	};
 	
 	//////// Defaults ////////////////////////////////
@@ -66,6 +80,8 @@
     "blank": '',
    	"default": ''
   };
-	$.fn.sprightlyFields.clearFields = false;
+	$.fn.sprightlyFields.options = {
+		clearFields: false
+	};
 	
 })(jQuery);
