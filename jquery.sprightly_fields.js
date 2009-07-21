@@ -4,24 +4,26 @@ var sf = {};
 (function($) {
   $.fn.sprightlyFields = function(selectors, options) {
     //return error if jquery.form is not included?
-		if (fieldExists(this)){
-			initialize(this, selectors, options)
+    var field = this;
+		if (fieldExists(field)){
+			initialize(field, selectors, options)
 			$(sf.field).change(function () {
-				updateFormForValue(sf.field_value, selectors);
+			  sf.field_value = field.fieldValue()[0];
+				updateForm();
 			});	    
 		}
 		return this;
   };
 
-	function updateFormForValue(value){
+	function updateForm(){
 	  if (sf.options.clearFields == true){ 
 	    $(":input", sf.dynamicFields).clearFields();
 	  }
 	  
-		if (sf.selectors[value] != undefined){ 
-		  showFieldsFor(sf.selectors[value]);
+		if (sf.selectors[sf.field_value] != undefined){ 
+		  showFieldsFor(sf.selectors[sf.field_value]);
 		}
-		else if (value == "" || value == undefined) {
+		else if (sf.field_value == "" || sf.field_value == undefined) {
 		  showFieldsFor(sf.selectors["blank"]);
 		}
 		else { showFieldsFor(sf.selectors["default"]); }
@@ -72,7 +74,7 @@ var sf = {};
 		sf.dynamicFields = dynamicFields(selectors);
 		sf.field = field;
 		sf.field_value = field.fieldValue()[0];
-		updateFormForValue(sf.field_value, sf.selectors);
+		updateForm();
 	};
 	
 	//////// Defaults ////////////////////////////////
